@@ -1,5 +1,6 @@
 # Logcat Analysis Agent
 
+
 [![CI](https://github.com/digablesolutions/logcat-agent/actions/workflows/ci.yml/badge.svg)](https://github.com/digablesolutions/logcat-agent/actions/workflows/ci.yml)
 [![Website](https://img.shields.io/badge/site-live-0a7ea4)](https://digablesolutions.github.io/logcat-agent/)
 
