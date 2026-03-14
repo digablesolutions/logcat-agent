@@ -5,6 +5,12 @@
 
 This repository contains an AI-assisted logcat analysis agent with advanced real-time monitoring capabilities. The agent connects to Android devices via `adb`, streams logcat output, and provides intelligent analysis including pattern detection, anomaly detection, trend analysis, and performance monitoring.
 
+## Website deployment
+
+The GitHub Pages site is built from `/website` by [`.github/workflows/pages.yml`](./.github/workflows/pages.yml).
+
+In **Settings → Pages**, set **Build and deployment → Source** to **GitHub Actions**. Branch publishing can only use the repository root or `/docs`, which causes GitHub Pages to publish the root `README.md` instead of the built website.
+
 ## Features
 
 ### 🔍 Basic Analysis
