@@ -1,0 +1,33 @@
+{
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "ignoreDeprecations": "6.0",
+  "compilerOptions": {
+    "target": "ES2022",
+    "lib": ["ES2023"],
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "outDir": "dist",
+    "rootDir": "src",
+    "strict": true,
+    "resolveJsonModule": true,
+    "declaration": false,
+    "skipLibCheck": true,
+    "verbatimModuleSyntax": true,
+    "exactOptionalPropertyTypes": true,
+    "noUncheckedIndexedAccess": true,
+    "noImplicitOverride": true,
+    "noPropertyAccessFromIndexSignature": true,
+    "useUnknownInCatchVariables": true,
+    "incremental": true,
+    "tsBuildInfoFile": "./node_modules/.cache/tsbuildinfo/.tsbuildinfo",
+    "paths": {
+      "@ai/*": ["./src/ai/*"],
+      "@adb/*": ["./src/adb/*"],
+      "@pipeline/*": ["./src/pipeline/*"],
+      "@ingest/*": ["./src/ingest/*"],
+      "@cli/*": ["./src/cli/*"],
+      "@protocols/*": ["./src/protocols/*"]
+    }
+  },
+  "include": ["src"]
+}

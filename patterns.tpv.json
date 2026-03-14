@@ -1,0 +1,42 @@
+[
+  {
+    "name": "TPV ArrayCopy Exception",
+    "regex": "Got an arraycopy exception",
+    "severity": "error",
+    "description": "TPV API: arraycopy error suggests buffer/length mismatch; trigger NAV ASAP"
+  },
+  {
+    "name": "TPV Socket runServerSocket",
+    "regex": "runServerSocket",
+    "severity": "warning",
+    "description": "Socket server thread activity or errors"
+  },
+  {
+    "name": "TPV ScalarService AIOOBE",
+    "regex": "ArrayIndexOutOfBoundsException",
+    "flags": "mi",
+    "severity": "error",
+    "description": "Array index out of bounds exception in ScalarService or related components"
+  },
+  {
+    "name": "TPV ScalarService Activity",
+    "regex": "com\\.tpv\\.ScalarService",
+    "flags": "mi",
+    "severity": "info",
+    "description": "General ScalarService activity lines"
+  },
+  {
+    "name": "SICP Command Error",
+    "regex": "SICP|SICPCmd|sendSICPCmd|dequeueCmd",
+    "flags": "m",
+    "severity": "info",
+    "description": "SICP command path activity/errors"
+  },
+  {
+    "name": "TPV API Activity",
+    "regex": "TPVapi|TPV API",
+    "flags": "i",
+    "severity": "info",
+    "description": "General TPV API activity"
+  }
+]
