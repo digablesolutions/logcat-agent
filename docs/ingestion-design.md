@@ -4,7 +4,7 @@ This document describes the current ingestion architecture for streaming logcat 
 
 ## Goals
 
-- Ingest continuous logs from many devices, such as meeting-room displays across a floor.
+- Ingest continuous logs from many devices, such as displays across a floor.
 - Persist raw and enriched events for 24 hours or longer with low overhead.
 - Detect patterns and summarize activity by device and day.
 - Control AI spend via batching, sampling, and backpressure.
