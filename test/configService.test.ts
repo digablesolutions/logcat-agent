@@ -1,0 +1,66 @@
+import { describe, it, expect, beforeEach, afterEach } from 'vitest';
+import { getConfigStore, resetConfigStore } from '../src/configService.js';
+import type { Config } from '../src/configService.js';
+
+describe('config store', () => {
+  const originalEnv = process.env;
+
+  beforeEach(() => {
+    resetConfigStore();
+    process.env = {};
+  });
+
+  afterEach(() => {
+    process.env = originalEnv;
+    resetConfigStore();
+  });
+
+  it('should load defaults', () => {
+    const config = getConfigStore();
+    expect(config.get('aiEnabled')).toBe(true);
+    expect(config.get('aiProvider')).toBe('openai');
+    expect(config.get('logcatBuffers')).toEqual(['main', 'crash']);
+  });
+
+  it('should load from env', () => {
+    process.env['LOGCAT_AI_PROVIDER'] = 'gemini';
+    process.env['LOGCAT_AI_MODEL'] = 'gemini-pro';
+
+    resetConfigStore();
+    const config = getConfigStore();
+
+    expect(config.get('aiProvider')).toBe('gemini');
+    expect(config.get('aiModel')).toBe('gemini-pro');
+  });
+
+  it('should clamp invalid numeric env values to safe ranges', () => {
+    process.env['LOGCAT_AI_CONCURRENCY'] = '99';
+    process.env['LOGCAT_AI_RETRIES'] = '-4';
+    process.env['OPENAI_TIMEOUT_MS'] = 'oops';
+    process.env['LOGCAT_SIGNATURE_MODE'] = 'invalid-mode';
+
+    resetConfigStore();
+    const config = getConfigStore();
+
+    expect(config.get('aiConcurrency')).toBe(5);
+    expect(config.get('aiMaxRetries')).toBe(0);
+    expect(config.get('aiTimeoutMs')).toBe(30000);
+    expect(config.get('logcatSignatureMode')).toBe('hash');
+  });
+
+  it('should normalize invalid runtime updates', () => {
+    const config = getConfigStore();
+
+    config.update({
+      aiConcurrency: Number.NaN,
+      aiDailyBudget: -10,
+      logcatMaxLines: 999999,
+      aiProvider: 'invalid' as Config['aiProvider'],
+    });
+
+    expect(config.get('aiConcurrency')).toBe(1);
+    expect(config.get('aiDailyBudget')).toBe(0);
+    expect(config.get('logcatMaxLines')).toBe(50000);
+    expect(config.get('aiProvider')).toBe('openai');
+  });
+});

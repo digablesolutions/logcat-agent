@@ -1,0 +1,65 @@
+{
+  "name": "@logcat/analysis-agent",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "packageManager": "npm@11.10.0",
+  "bin": {
+    "logcat-agent": "dist/cli/main.js"
+  },
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "scripts": {
+    "ai:smoke": "tsx scripts/ai-smoke.ts",
+    "ai:smoke:noai": "tsx scripts/ai-smoke.ts --provider noop",
+    "build": "tsc -p tsconfig.build.json && tsc-alias -p tsconfig.build.json",
+    "cli:cleanup": "tsx src/cli/main.ts cleanup",
+    "cli:devices": "tsx src/cli/main.ts devices",
+    "cli:patterns": "tsx src/cli/main.ts patterns",
+    "cli:realtime": "tsx src/cli/main.ts realtime",
+    "cli:stream": "tsx src/cli/main.ts stream",
+    "cli:stream-all": "tsx src/cli/main.ts stream-all",
+    "cli:summarize": "tsx src/cli/main.ts summarize",
+    "cli:tcp": "tsx src/cli/main.ts tcp",
+    "cli:wifi": "tsx src/cli/main.ts wifi",
+    "dev": "tsx src/cli/main.ts",
+    "format": "prettier -w .",
+    "format:check": "prettier -c .",
+    "lint": "eslint src test website/src website/*.ts",
+    "start": "node dist/cli/main.js",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "dependencies": {
+    "@devicefarmer/adbkit": "^3.3.8",
+    "@devicefarmer/adbkit-logcat": "^2.1.3",
+    "@google/generative-ai": "^0.24.1",
+    "chalk": "^5.6.2",
+    "commander": "^14.0.3",
+    "dotenv": "^17.3.1",
+    "eventemitter3": "^5.0.4",
+    "fast-redact": "^3.5.0",
+    "multicast-dns": "^7.2.5",
+    "openai": "^6.29.0",
+    "p-limit": "^7.3.0",
+    "qrcode-terminal": "^0.12.0",
+    "string-hash": "^1.1.3"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@types/node": "^25.5.0",
+    "@types/string-hash": "^1.1.3",
+    "esbuild": "^0.27.4",
+    "eslint": "^10.0.3",
+    "eslint-config-prettier": "^10.1.8",
+    "prettier": "^3.8.1",
+    "prettier-plugin-packagejson": "^3.0.2",
+    "tsc-alias": "^1.8.16",
+    "tsx": "^4.21.0",
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.57.0",
+    "vitest": "^4.1.0"
+  }
+}
