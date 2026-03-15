@@ -1,7 +1,5 @@
 import { GeminiProvider, type GeminiProviderOptions } from '../ai/geminiProvider.js';
 import {
-  DEFAULT_GEMINI_MODEL,
-  DEFAULT_OPENAI_MODEL,
   resolveConfiguredModel,
 } from '../ai/modelDefaults.js';
 import { OpenAiProvider, type OpenAiProviderOptions } from '../ai/openaiProvider.js';
@@ -166,7 +164,7 @@ export const createAiProvider = (options: AiProviderFactoryOptions): IAiProvider
     return new OpenAiProvider(options.openaiApiKey, {
       ...(options.openAiProviderOptions ?? {}),
       model: resolveConfiguredModel('openai', {
-        explicitModel: options.model ?? options.defaultOpenAiModel ?? DEFAULT_OPENAI_MODEL,
+        explicitModel: options.model ?? options.defaultOpenAiModel,
       }),
       ...(options.openaiBaseUrl ? { baseURL: options.openaiBaseUrl } : {}),
     });
@@ -182,7 +180,7 @@ export const createAiProvider = (options: AiProviderFactoryOptions): IAiProvider
     return new GeminiProvider(options.geminiApiKey, {
       ...(options.geminiProviderOptions ?? {}),
       model: resolveConfiguredModel('gemini', {
-        explicitModel: options.model ?? options.defaultGeminiModel ?? DEFAULT_GEMINI_MODEL,
+        explicitModel: options.model ?? options.defaultGeminiModel,
       }),
     });
   }

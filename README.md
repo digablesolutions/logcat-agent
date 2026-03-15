@@ -1,16 +1,8 @@
 # Logcat Analysis Agent
 
-
-[![CI](https://github.com/digablesolutions/logcat-agent/actions/workflows/ci.yml/badge.svg)](https://github.com/digablesolutions/logcat-agent/actions/workflows/ci.yml)
-[![Website](https://img.shields.io/badge/site-live-0a7ea4)](https://digablesolutions.github.io/logcat-agent/)
+[![CI](https://github.com/kistradegoods/logcat-agent/actions/workflows/ci.yml/badge.svg)](https://github.com/kistradegoods/logcat-agent/actions/workflows/ci.yml)
 
 This repository contains an AI-assisted logcat analysis agent with advanced real-time monitoring capabilities. The agent connects to Android devices via `adb`, streams logcat output, and provides intelligent analysis including pattern detection, anomaly detection, trend analysis, and performance monitoring.
-
-## Website deployment
-
-The GitHub Pages site is built from `/website` by [`.github/workflows/pages.yml`](./.github/workflows/pages.yml).
-
-In **Settings → Pages**, set **Build and deployment → Source** to **GitHub Actions**. Branch publishing can only use the repository root or `/docs`, which causes GitHub Pages to publish the root `README.md` instead of the built website.
 
 ## Features
 
@@ -47,7 +39,7 @@ In **Settings → Pages**, set **Build and deployment → Source** to **GitHub A
    GEMINI_API_KEY=...
    ```
 
-  Tip: See `.env.example` for all available options, including `OPENAI_BASE_URL`, `LOGCAT_AI_MODEL`, `OPENAI_MODEL`, `GEMINI_MODEL`, and `OPENAI_TIMEOUT_MS`.
+    Tip: See `.env.example` for all available options, including `OPENAI_BASE_URL`, `LOGCAT_AI_MODEL`, `OPENAI_MODEL`, `GEMINI_MODEL`, and `OPENAI_TIMEOUT_MS`.
 
    Or, to use a local SLM via an OpenAI-compatible server (no key required), set a base URL:
 
