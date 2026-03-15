@@ -1,7 +1,10 @@
 import 'dotenv/config';
-import { getDefaultModelForProvider, resolveConfiguredModel } from './ai/modelDefaults.js';
+import {
+  getDefaultModelForProvider,
+  resolveConfiguredModel,
+  resolveConfiguredProvider,
+} from './ai/modelDefaults.js';
 
-const AI_PROVIDERS = ['openai', 'gemini'] as const;
 const LOG_PRIORITIES = ['V', 'D', 'I', 'W', 'E', 'F'] as const;
 const SIGNATURE_MODES = ['hash', 'fuzzy', 'both'] as const;
 
@@ -77,7 +80,7 @@ export interface ConfigStore {
 }
 
 const normalizeConfig = (config: Config): Config => {
-  const aiProvider = normalizeEnum(config.aiProvider, AI_PROVIDERS, 'openai');
+  const aiProvider = resolveConfiguredProvider(config.aiProvider);
 
   return {
     aiEnabled: Boolean(config.aiEnabled),
@@ -114,7 +117,7 @@ const loadConfigFromEnv = (): Config => {
     const parsed = Number.parseInt(env(k, String(def)), 10);
     return Number.isFinite(parsed) ? parsed : def;
   };
-  const aiProvider = normalizeEnum(env('LOGCAT_AI_PROVIDER', 'openai'), AI_PROVIDERS, 'openai');
+  const aiProvider = resolveConfiguredProvider(undefined, { env: process.env });
 
   return {
     aiEnabled: true,
