@@ -47,7 +47,7 @@ export const getDefaultModelForProvider = (provider: AiProviderName): string => 
 export const resolveConfiguredModel = (
   provider: AiProviderName,
   options: Readonly<{
-    explicitModel?: string;
+    explicitModel?: string | undefined;
     env?: NodeJS.ProcessEnv;
   }> = {}
 ): string => {
