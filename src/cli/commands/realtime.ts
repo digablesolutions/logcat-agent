@@ -2,6 +2,7 @@ import { Command } from 'commander';
 import chalk from 'chalk';
 import { listDevices, spawnLogcatBinary, type Device } from '../../adb/adbClient.js';
 import { attachLogcatParser } from '../../adb/logcatStream.js';
+import { resolveConfiguredModel, resolveConfiguredProvider } from '../../ai/modelDefaults.js';
 import { makeFilter } from '../../pipeline/filters.js';
 import { RealtimeAnalysisEngine } from '../../ai/realtime/index.js';
 import type {
@@ -75,14 +76,20 @@ const performRealtimeAction = async (opts: RealtimeOptions): Promise<void> => {
   });
 
   const buffers = parseBuffers(opts.buffers);
+  const resolvedProvider = resolveConfiguredProvider(opts.provider, {
+    rejectInvalidExplicit: true,
+  });
 
   const aiProvider = createAiProvider({
-    provider: opts.provider,
+    provider: resolvedProvider,
     model: opts.model,
     openaiApiKey: process.env['OPENAI_API_KEY'],
     openaiBaseUrl:
       opts.openaiBaseUrl || process.env['LOGCAT_OPENAI_BASE_URL'] || process.env['OPENAI_BASE_URL'],
     geminiApiKey: process.env['GEMINI_API_KEY'],
+  });
+  const resolvedAiModel = resolveConfiguredModel(resolvedProvider, {
+    explicitModel: opts.model,
   });
   const profileConfig = getAnalysisProfile(opts.profile);
   const renderer = createConsoleLogRenderer();
@@ -141,7 +148,7 @@ const performRealtimeAction = async (opts: RealtimeOptions): Promise<void> => {
     model: selectedDevice.model,
     buffers,
     minPriority: minPriority || 'I',
-    aiModel: opts.model || 'default',
+    aiModel: resolvedAiModel,
     profileName: opts.profile,
     profileDescription: getProfileDescription(opts.profile),
     windowSize: realtimeConfig.windowSize,
@@ -226,7 +233,7 @@ export const realtimeCmd = new Command('realtime')
   .option('-t, --tags <list>', 'comma-separated include tags')
   .option('--filter-expr <expr...>', 'raw logcat filter expression segments')
   .option('--model <name>', 'AI model to use')
-  .option('--provider <provider>', 'AI provider to use (openai or gemini)', 'openai')
+  .option('--provider <provider>', 'AI provider to use (openai or gemini)')
   .option(
     '--openai-base-url <url>',
     'OpenAI-compatible API base URL (e.g., http://localhost:11434/v1)'

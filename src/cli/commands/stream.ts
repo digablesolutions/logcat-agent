@@ -24,6 +24,7 @@ import {
 } from '../logCommandSupport.js';
 import { createSessionController, logSelectedDevice, selectStreamingDevice } from '../sessionSupport.js';
 import chalk from 'chalk';
+import { resolveConfiguredProvider } from '../../ai/modelDefaults.js';
 
 const require = createRequire(import.meta.url);
 
@@ -220,10 +221,14 @@ const performStreamAction = async (opts: StreamOptions): Promise<void> => {
     opts.customPatternsOnly ? 'custom' : 'merge'
   );
 
+  const resolvedProvider = resolveConfiguredProvider(opts.provider, {
+    rejectInvalidExplicit: true,
+  });
+
   const aiProvider = !opts.noAi
     ? createAiProvider({
-        provider: opts.provider,
-        model: opts.model || config.get('aiModel'),
+        provider: resolvedProvider,
+        model: opts.model,
         openaiApiKey: config.get('aiApiKey'),
         openaiBaseUrl: opts.openaiBaseUrl || config.get('aiBaseUrl') || undefined,
         geminiApiKey: process.env['GEMINI_API_KEY'],
@@ -349,7 +354,7 @@ export const streamCmd = new Command('stream')
   .option('--filter-expr <expr...>', 'raw logcat filter expression segments')
   .option('--no-ai', 'disable AI analysis')
   .option('--model <name>', 'AI model to use')
-  .option('--provider <provider>', 'AI provider to use (openai or gemini)', 'openai')
+  .option('--provider <provider>', 'AI provider to use (openai or gemini)')
   .option(
     '--openai-base-url <url>',
     'OpenAI-compatible API base URL (e.g., http://localhost:11434/v1)'

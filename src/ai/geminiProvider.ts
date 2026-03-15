@@ -1,5 +1,9 @@
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import { AiProviderError, getErrorCode, getErrorMessage, getErrorStatus } from '../errors.js';
+import {
+  DEFAULT_GEMINI_MODEL_FALLBACKS,
+  resolveConfiguredModel,
+} from './modelDefaults.js';
 import type { IAiProvider, AnalysisInput, AnalysisResult } from './provider.js';
 import { redactMessage } from './masking.js';
 import { makeLimiter as defaultMakeLimiter } from './rateLimiter.js';
@@ -60,13 +64,16 @@ export class GeminiProvider implements IAiProvider {
 
   constructor(
     apiKey: string,
-    modelOrOptions: string | GeminiProviderOptions = 'gemini-1.5-flash-latest',
+    modelOrOptions: string | GeminiProviderOptions = {},
     client?: GoogleGenerativeAI
   ) {
-    const env = (k: string) => process.env[k];
+    const env = (key: string) => process.env[key];
 
     const baseOptions: GeminiProviderOptions =
       typeof modelOrOptions === 'string' ? { model: modelOrOptions } : modelOrOptions;
+    const resolvedModel = resolveConfiguredModel('gemini', {
+      explicitModel: baseOptions.model,
+    });
 
     const resolved: Required<
       Omit<GeminiProviderOptions, 'limiter' | 'modelFallbacks' | 'redact' | 'model'>
@@ -92,11 +99,11 @@ export class GeminiProvider implements IAiProvider {
         defaultMakeLimiter(
           parseInt(env('LOGCAT_AI_CONCURRENCY') || '') || baseOptions.concurrency || 1
         ),
-      modelFallbacks: baseOptions.modelFallbacks || [],
+      modelFallbacks: baseOptions.modelFallbacks || [...DEFAULT_GEMINI_MODEL_FALLBACKS],
       redact: baseOptions.redact || ((s: string) => redactMessage(s)),
     };
 
-    this.model = baseOptions.model || env('LOGCAT_AI_MODEL') || 'gemini-1.5-flash-latest';
+    this.model = resolvedModel;
     this.options = resolved;
     this.client = client ?? new GoogleGenerativeAI(apiKey);
   }
@@ -170,7 +177,10 @@ export class GeminiProvider implements IAiProvider {
             return { content, usedModel: m };
           } catch (err: unknown) {
             lastErr = err;
-            const isModelError = false;
+            const msg = getErrorMessage(err);
+            const status = getErrorStatus(err);
+            const isModelError =
+              status === 404 || /model.*not.*found|unsupported.*model|unknown.*model/i.test(msg);
             if (!isModelError) throw err;
           }
         }

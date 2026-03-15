@@ -1,6 +1,10 @@
 import 'dotenv/config';
+import {
+  getDefaultModelForProvider,
+  resolveConfiguredModel,
+  resolveConfiguredProvider,
+} from './ai/modelDefaults.js';
 
-const AI_PROVIDERS = ['openai', 'gemini'] as const;
 const LOG_PRIORITIES = ['V', 'D', 'I', 'W', 'E', 'F'] as const;
 const SIGNATURE_MODES = ['hash', 'fuzzy', 'both'] as const;
 
@@ -76,10 +80,12 @@ export interface ConfigStore {
 }
 
 const normalizeConfig = (config: Config): Config => {
+  const aiProvider = resolveConfiguredProvider(config.aiProvider);
+
   return {
     aiEnabled: Boolean(config.aiEnabled),
-    aiProvider: normalizeEnum(config.aiProvider, AI_PROVIDERS, 'openai'),
-    aiModel: normalizeOptionalString(config.aiModel) ?? 'gpt-4o-mini',
+    aiProvider,
+    aiModel: normalizeOptionalString(config.aiModel) ?? getDefaultModelForProvider(aiProvider),
     aiBaseUrl: normalizeOptionalString(config.aiBaseUrl),
     aiApiKey: normalizeOptionalString(config.aiApiKey),
     aiMaxMessageChars: clampInteger(config.aiMaxMessageChars, 2000, 256, 20000),
@@ -111,11 +117,12 @@ const loadConfigFromEnv = (): Config => {
     const parsed = Number.parseInt(env(k, String(def)), 10);
     return Number.isFinite(parsed) ? parsed : def;
   };
+  const aiProvider = resolveConfiguredProvider(undefined, { env: process.env });
 
   return {
     aiEnabled: true,
-    aiProvider: (env('LOGCAT_AI_PROVIDER', 'openai') as 'openai' | 'gemini'),
-    aiModel: env('LOGCAT_AI_MODEL', 'gpt-4o-mini'),
+    aiProvider,
+    aiModel: resolveConfiguredModel(aiProvider, { env: process.env }),
     aiBaseUrl: env('LOGCAT_OPENAI_BASE_URL') || env('OPENAI_BASE_URL'),
     aiApiKey: env('OPENAI_API_KEY') || env('GEMINI_API_KEY'),
     aiMaxMessageChars: int('LOGCAT_AI_MAX_MSG_CHARS', 2000),

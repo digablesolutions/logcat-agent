@@ -1,4 +1,8 @@
 import { GeminiProvider, type GeminiProviderOptions } from '../ai/geminiProvider.js';
+import {
+  resolveConfiguredModel,
+  resolveConfiguredProvider,
+} from '../ai/modelDefaults.js';
 import { OpenAiProvider, type OpenAiProviderOptions } from '../ai/openaiProvider.js';
 import type { IAiProvider } from '../ai/provider.js';
 import { AppError } from '../errors.js';
@@ -148,7 +152,9 @@ export interface AiProviderFactoryOptions {
 }
 
 export const createAiProvider = (options: AiProviderFactoryOptions): IAiProvider => {
-  const provider = options.provider ?? 'openai';
+  const provider = resolveConfiguredProvider(options.provider, {
+    rejectInvalidExplicit: true,
+  });
 
   if (provider === 'openai') {
     if (!options.openaiApiKey && !options.openaiBaseUrl) {
@@ -160,7 +166,9 @@ export const createAiProvider = (options: AiProviderFactoryOptions): IAiProvider
 
     return new OpenAiProvider(options.openaiApiKey, {
       ...(options.openAiProviderOptions ?? {}),
-      model: options.model ?? options.defaultOpenAiModel ?? 'gpt-4o-mini',
+      model: resolveConfiguredModel('openai', {
+        explicitModel: options.model ?? options.defaultOpenAiModel,
+      }),
       ...(options.openaiBaseUrl ? { baseURL: options.openaiBaseUrl } : {}),
     });
   }
@@ -174,7 +182,9 @@ export const createAiProvider = (options: AiProviderFactoryOptions): IAiProvider
 
     return new GeminiProvider(options.geminiApiKey, {
       ...(options.geminiProviderOptions ?? {}),
-      model: options.model ?? options.defaultGeminiModel ?? 'gemini-1.5-flash-latest',
+      model: resolveConfiguredModel('gemini', {
+        explicitModel: options.model ?? options.defaultGeminiModel,
+      }),
     });
   }
 

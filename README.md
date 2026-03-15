@@ -1,16 +1,8 @@
 # Logcat Analysis Agent
 
-
 [![CI](https://github.com/digablesolutions/logcat-agent/actions/workflows/ci.yml/badge.svg)](https://github.com/digablesolutions/logcat-agent/actions/workflows/ci.yml)
-[![Website](https://img.shields.io/badge/site-live-0a7ea4)](https://digablesolutions.github.io/logcat-agent/)
 
 This repository contains an AI-assisted logcat analysis agent with advanced real-time monitoring capabilities. The agent connects to Android devices via `adb`, streams logcat output, and provides intelligent analysis including pattern detection, anomaly detection, trend analysis, and performance monitoring.
-
-## Website deployment
-
-The GitHub Pages site is built from `/website` by [`.github/workflows/pages.yml`](./.github/workflows/pages.yml).
-
-In **Settings → Pages**, set **Build and deployment → Source** to **GitHub Actions**. Branch publishing can only use the repository root or `/docs`, which causes GitHub Pages to publish the root `README.md` instead of the built website.
 
 ## Features
 
@@ -47,7 +39,7 @@ In **Settings → Pages**, set **Build and deployment → Source** to **GitHub A
    GEMINI_API_KEY=...
    ```
 
-   Tip: See `.env.example` for all available options, including `OPENAI_BASE_URL` for local SLMs and `OPENAI_TIMEOUT_MS`.
+    Tip: See `.env.example` for all available options, including `OPENAI_BASE_URL`, `LOGCAT_AI_MODEL`, `OPENAI_MODEL`, `GEMINI_MODEL`, and `OPENAI_TIMEOUT_MS`.
 
    Or, to use a local SLM via an OpenAI-compatible server (no key required), set a base URL:
 
@@ -97,8 +89,8 @@ npx tsx src/cli/main.ts stream [options]
 - `-p, --min-priority <P>` - Minimum priority V|D|I|W|E|F (default: I)
 - `-t, --tags <list>` - Include specific tags
 - `--no-ai` - Disable AI analysis
-- `--provider <provider>` - AI provider: `openai` or `gemini` (default: `openai`)
-- `--model <name>` - AI model (OpenAI default: `gpt-4o-mini`; Gemini default: `gemini-1.5-flash-latest`)
+- `--provider <provider>` - AI provider: `openai` or `gemini` (default: `LOGCAT_AI_PROVIDER` or `openai`)
+- `--model <name>` - AI model (OpenAI default: `gpt-5-mini`; Gemini default: `gemini-2.5-flash`)
 - `--patterns-file <path>` - JSON file with custom patterns
 - `--custom-patterns-only` - Use only patterns from `--patterns-file`
 - `--export-jsonl <dir>` - Export matched events to rotating JSONL files under `<dir>`
@@ -156,11 +148,18 @@ Provider/model examples:
 
 ```sh
 # OpenAI (default)
-OPENAI_API_KEY=sk-... npx tsx src/cli/main.ts realtime --profile development --provider openai --model gpt-4o-mini
+OPENAI_API_KEY=sk-... npx tsx src/cli/main.ts realtime --profile development --provider openai --model gpt-5-mini
 
 # Google Gemini
-GEMINI_API_KEY=... npx tsx src/cli/main.ts realtime --profile development --provider gemini --model gemini-1.5-flash-latest
+GEMINI_API_KEY=... npx tsx src/cli/main.ts realtime --profile development --provider gemini --model gemini-2.5-flash
 ```
+
+Model selection precedence:
+
+- `--model`
+- `OPENAI_MODEL` or `GEMINI_MODEL` for the selected provider
+- `LOGCAT_AI_MODEL`
+- built-in provider defaults (`gpt-5-mini` for OpenAI, `gemini-2.5-flash` for Gemini)
 
 ### `summarize` - JSONL (daily report)
 

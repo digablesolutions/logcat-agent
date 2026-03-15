@@ -214,7 +214,7 @@ export default function App() {
                   previewSrc: 'demo1.mp4',
                 },
                 { c: `${cli} stream --no-ai`, d: 'Disable AI analysis' },
-                { c: `${cli} stream --model gpt-4o-mini`, d: 'Choose AI model' },
+                { c: `${cli} stream --model gpt-5-mini`, d: 'Choose AI model' },
                 {
                   c: `${cli} stream --ai-sample-per-signature 3600000 --ai-daily-budget 50`,
                   d: 'AI sampling + daily budget',
