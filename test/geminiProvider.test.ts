@@ -4,14 +4,17 @@ import type { GoogleGenerativeAI } from '@google/generative-ai';
 import type { AnalysisInput } from '../src/ai/provider.js';
 
 describe('GeminiProvider', () => {
-  const originalEnv = process.env;
+  const clearEnv = () => {
+    delete process.env['GEMINI_MODEL'];
+    delete process.env['LOGCAT_AI_MODEL'];
+  };
 
   beforeEach(() => {
-    process.env = {};
+    clearEnv();
   });
 
   afterEach(() => {
-    process.env = originalEnv;
+    clearEnv();
   });
 
   it('should call the Gemini API with the correct prompt and parse the response', async () => {

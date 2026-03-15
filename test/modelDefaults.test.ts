@@ -1,19 +1,36 @@
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import {
+  DEFAULT_AI_PROVIDER,
   DEFAULT_GEMINI_MODEL,
   DEFAULT_OPENAI_MODEL,
   resolveConfiguredModel,
+  resolveConfiguredProvider,
 } from '../src/ai/modelDefaults.js';
 
 describe('model default resolution', () => {
-  const originalEnv = process.env;
+  const clearEnv = () => {
+    delete process.env['LOGCAT_AI_PROVIDER'];
+    delete process.env['LOGCAT_AI_MODEL'];
+    delete process.env['OPENAI_MODEL'];
+    delete process.env['GEMINI_MODEL'];
+  };
 
   beforeEach(() => {
-    process.env = {};
+    clearEnv();
   });
 
   afterEach(() => {
-    process.env = originalEnv;
+    clearEnv();
+  });
+
+  it('returns the built-in provider default when no overrides are set', () => {
+    expect(resolveConfiguredProvider()).toBe(DEFAULT_AI_PROVIDER);
+  });
+
+  it('prefers the configured provider when no explicit provider is supplied', () => {
+    process.env['LOGCAT_AI_PROVIDER'] = 'gemini';
+
+    expect(resolveConfiguredProvider()).toBe('gemini');
   });
 
   it('returns the built-in provider defaults when no overrides are set', () => {

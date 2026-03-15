@@ -8,14 +8,18 @@ import {
 } from '../src/cli/logCommandSupport.js';
 
 describe('logCommandSupport numeric parsing', () => {
-  const originalEnv = process.env;
+  const clearEnv = () => {
+    delete process.env['LOGCAT_AI_PROVIDER'];
+    delete process.env['LOGCAT_AI_MODEL'];
+    delete process.env['OPENAI_MODEL'];
+  };
 
   beforeEach(() => {
-    process.env = {};
+    clearEnv();
   });
 
   afterEach(() => {
-    process.env = originalEnv;
+    clearEnv();
   });
 
   it('parses integers with bounds', () => {
@@ -44,5 +48,15 @@ describe('logCommandSupport numeric parsing', () => {
     });
 
     expect(provider.name()).toBe('openai:gpt-5.4');
+  });
+
+  it('uses LOGCAT_AI_PROVIDER when no explicit provider is supplied', () => {
+    process.env['LOGCAT_AI_PROVIDER'] = 'gemini';
+
+    const provider = createAiProvider({
+      geminiApiKey: 'test-key',
+    });
+
+    expect(provider.name()).toBe('gemini:gemini-2.5-flash');
   });
 });

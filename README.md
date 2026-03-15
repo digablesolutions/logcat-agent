@@ -1,6 +1,6 @@
 # Logcat Analysis Agent
 
-[![CI](https://github.com/kistradegoods/logcat-agent/actions/workflows/ci.yml/badge.svg)](https://github.com/kistradegoods/logcat-agent/actions/workflows/ci.yml)
+[![CI](https://github.com/digablesolutions/logcat-agent/actions/workflows/ci.yml/badge.svg)](https://github.com/digablesolutions/logcat-agent/actions/workflows/ci.yml)
 
 This repository contains an AI-assisted logcat analysis agent with advanced real-time monitoring capabilities. The agent connects to Android devices via `adb`, streams logcat output, and provides intelligent analysis including pattern detection, anomaly detection, trend analysis, and performance monitoring.
 
@@ -89,7 +89,7 @@ npx tsx src/cli/main.ts stream [options]
 - `-p, --min-priority <P>` - Minimum priority V|D|I|W|E|F (default: I)
 - `-t, --tags <list>` - Include specific tags
 - `--no-ai` - Disable AI analysis
-- `--provider <provider>` - AI provider: `openai` or `gemini` (default: `openai`)
+- `--provider <provider>` - AI provider: `openai` or `gemini` (default: `LOGCAT_AI_PROVIDER` or `openai`)
 - `--model <name>` - AI model (OpenAI default: `gpt-5-mini`; Gemini default: `gemini-2.5-flash`)
 - `--patterns-file <path>` - JSON file with custom patterns
 - `--custom-patterns-only` - Use only patterns from `--patterns-file`

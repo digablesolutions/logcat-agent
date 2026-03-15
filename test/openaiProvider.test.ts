@@ -23,14 +23,17 @@ function makeInput(): AnalysisInput {
 }
 
 describe('OpenAiProvider (OpenAI-compatible base URL)', () => {
-  const originalEnv = process.env;
+  const clearEnv = () => {
+    delete process.env['OPENAI_MODEL'];
+    delete process.env['LOGCAT_AI_MODEL'];
+  };
 
   beforeEach(() => {
-    process.env = {};
+    clearEnv();
   });
 
   afterEach(() => {
-    process.env = originalEnv;
+    clearEnv();
   });
 
   it('parses JSON result and propagates signature (with API key)', async () => {

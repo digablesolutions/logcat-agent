@@ -31,6 +31,7 @@ import {
   requireSignatureMode,
 } from '../logCommandSupport.js';
 import { createSessionController } from '../sessionSupport.js';
+import { resolveConfiguredProvider } from '../../ai/modelDefaults.js';
 
 type DroppablePriority = Extract<Priority, 'V' | 'D' | 'I'>;
 
@@ -172,10 +173,11 @@ const performStreamAllAction = async (
     minimum: 1,
   });
   const limiter = makeLimiter(1);
+  const resolvedProvider = resolveConfiguredProvider(opts.provider);
 
   const aiProvider = aiEnabled
     ? createAiProvider({
-        provider: opts.provider,
+        provider: resolvedProvider,
         model: opts.model,
         openaiApiKey: process.env['OPENAI_API_KEY'],
         geminiApiKey: process.env['GEMINI_API_KEY'],
@@ -401,7 +403,7 @@ export const streamAllCmd = new Command('stream-all')
   .option('--filter-expr <expr...>', 'raw logcat filter expression segments')
   .option('--no-ai', 'disable AI analysis (default recommended for 24h ingestion)')
   .option('--model <name>', 'AI model to use')
-  .option('--provider <provider>', 'AI provider to use (openai or gemini)', 'openai')
+  .option('--provider <provider>', 'AI provider to use (openai or gemini)')
   .option(
     '--ai-sample-per-signature <ms>',
     'min milliseconds between AI analyses for the same signature (default 8h)',

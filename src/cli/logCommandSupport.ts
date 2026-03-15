@@ -1,6 +1,7 @@
 import { GeminiProvider, type GeminiProviderOptions } from '../ai/geminiProvider.js';
 import {
   resolveConfiguredModel,
+  resolveConfiguredProvider,
 } from '../ai/modelDefaults.js';
 import { OpenAiProvider, type OpenAiProviderOptions } from '../ai/openaiProvider.js';
 import type { IAiProvider } from '../ai/provider.js';
@@ -151,7 +152,7 @@ export interface AiProviderFactoryOptions {
 }
 
 export const createAiProvider = (options: AiProviderFactoryOptions): IAiProvider => {
-  const provider = options.provider ?? 'openai';
+  const provider = resolveConfiguredProvider(options.provider);
 
   if (provider === 'openai') {
     if (!options.openaiApiKey && !options.openaiBaseUrl) {

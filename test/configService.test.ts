@@ -1,17 +1,26 @@
-import { describe, it, expect, beforeEach, afterEach } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { getConfigStore, resetConfigStore } from '../src/configService.js';
 import type { Config } from '../src/configService.js';
 
 describe('config store', () => {
-  const originalEnv = process.env;
+  const clearEnv = () => {
+    delete process.env['LOGCAT_AI_PROVIDER'];
+    delete process.env['LOGCAT_AI_MODEL'];
+    delete process.env['OPENAI_MODEL'];
+    delete process.env['GEMINI_MODEL'];
+    delete process.env['LOGCAT_AI_CONCURRENCY'];
+    delete process.env['LOGCAT_AI_RETRIES'];
+    delete process.env['OPENAI_TIMEOUT_MS'];
+    delete process.env['LOGCAT_SIGNATURE_MODE'];
+  };
 
   beforeEach(() => {
     resetConfigStore();
-    process.env = {};
+    clearEnv();
   });
 
   afterEach(() => {
-    process.env = originalEnv;
+    clearEnv();
     resetConfigStore();
   });
 
