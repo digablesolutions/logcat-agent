@@ -1,3 +1,5 @@
+import { AppError } from '../errors.js';
+
 export type AiProviderName = 'openai' | 'gemini';
 
 const AI_PROVIDER_NAMES = ['openai', 'gemini'] as const;
@@ -22,22 +24,33 @@ export const isAiProviderName = (value: string): value is AiProviderName => {
   return (AI_PROVIDER_NAMES as readonly string[]).includes(value);
 };
 
+const parseAiProviderName = (value: string | undefined): AiProviderName | undefined => {
+  const normalized = value?.trim();
+  return normalized && isAiProviderName(normalized) ? normalized : undefined;
+};
+
 export const resolveConfiguredProvider = (
   explicitProvider?: string,
   options: Readonly<{
     env?: NodeJS.ProcessEnv;
+    rejectInvalidExplicit?: boolean;
+    flagName?: string;
   }> = {}
 ): AiProviderName => {
-  if (explicitProvider && isAiProviderName(explicitProvider)) {
-    return explicitProvider;
+  const parsedExplicitProvider = parseAiProviderName(explicitProvider);
+  if (parsedExplicitProvider) {
+    return parsedExplicitProvider;
+  }
+
+  if (explicitProvider?.trim() && options.rejectInvalidExplicit) {
+    throw new AppError(
+      `Invalid ${options.flagName ?? '--provider'} value: ${explicitProvider}. Expected one of openai,gemini.`,
+      { code: 'CONFIG_ERROR' }
+    );
   }
 
   const env = options.env ?? process.env;
-  const configuredProvider = readEnvValue(env, 'LOGCAT_AI_PROVIDER');
-
-  return configuredProvider && isAiProviderName(configuredProvider)
-    ? configuredProvider
-    : DEFAULT_AI_PROVIDER;
+  return parseAiProviderName(readEnvValue(env, 'LOGCAT_AI_PROVIDER')) ?? DEFAULT_AI_PROVIDER;
 };
 
 export const getDefaultModelForProvider = (provider: AiProviderName): string => {

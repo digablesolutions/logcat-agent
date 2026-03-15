@@ -221,7 +221,9 @@ const performStreamAction = async (opts: StreamOptions): Promise<void> => {
     opts.customPatternsOnly ? 'custom' : 'merge'
   );
 
-  const resolvedProvider = resolveConfiguredProvider(opts.provider);
+  const resolvedProvider = resolveConfiguredProvider(opts.provider, {
+    rejectInvalidExplicit: true,
+  });
 
   const aiProvider = !opts.noAi
     ? createAiProvider({

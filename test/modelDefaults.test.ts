@@ -6,21 +6,19 @@ import {
   resolveConfiguredModel,
   resolveConfiguredProvider,
 } from '../src/ai/modelDefaults.js';
+import { clearEnvKeys, restoreEnv, snapshotEnv } from './envTestUtils.js';
 
 describe('model default resolution', () => {
-  const clearEnv = () => {
-    delete process.env['LOGCAT_AI_PROVIDER'];
-    delete process.env['LOGCAT_AI_MODEL'];
-    delete process.env['OPENAI_MODEL'];
-    delete process.env['GEMINI_MODEL'];
-  };
+  const ENV_KEYS = ['LOGCAT_AI_PROVIDER', 'LOGCAT_AI_MODEL', 'OPENAI_MODEL', 'GEMINI_MODEL'] as const;
+  let envSnapshot: ReadonlyMap<string, string | undefined> = new Map();
 
   beforeEach(() => {
-    clearEnv();
+    envSnapshot = snapshotEnv(ENV_KEYS);
+    clearEnvKeys(ENV_KEYS);
   });
 
   afterEach(() => {
-    clearEnv();
+    restoreEnv(envSnapshot);
   });
 
   it('returns the built-in provider default when no overrides are set', () => {
@@ -31,6 +29,10 @@ describe('model default resolution', () => {
     process.env['LOGCAT_AI_PROVIDER'] = 'gemini';
 
     expect(resolveConfiguredProvider()).toBe('gemini');
+  });
+
+  it('trims explicit provider values before validating them', () => {
+    expect(resolveConfiguredProvider(' gemini ')).toBe('gemini');
   });
 
   it('returns the built-in provider defaults when no overrides are set', () => {
@@ -50,5 +52,11 @@ describe('model default resolution', () => {
     process.env['GEMINI_MODEL'] = 'gemini-2.5-flash-lite';
 
     expect(resolveConfiguredModel('gemini')).toBe('gemini-2.5-flash-lite');
+  });
+
+  it('rejects invalid explicit provider values when strict mode is enabled', () => {
+    expect(() => resolveConfiguredProvider(' typo ', { rejectInvalidExplicit: true })).toThrow(
+      'Invalid --provider value:  typo . Expected one of openai,gemini.'
+    );
   });
 });

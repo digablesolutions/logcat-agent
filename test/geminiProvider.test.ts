@@ -2,19 +2,19 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { GeminiProvider } from '../src/ai/geminiProvider.js';
 import type { GoogleGenerativeAI } from '@google/generative-ai';
 import type { AnalysisInput } from '../src/ai/provider.js';
+import { clearEnvKeys, restoreEnv, snapshotEnv } from './envTestUtils.js';
 
 describe('GeminiProvider', () => {
-  const clearEnv = () => {
-    delete process.env['GEMINI_MODEL'];
-    delete process.env['LOGCAT_AI_MODEL'];
-  };
+  const ENV_KEYS = ['GEMINI_MODEL', 'LOGCAT_AI_MODEL'] as const;
+  let envSnapshot: ReadonlyMap<string, string | undefined> = new Map();
 
   beforeEach(() => {
-    clearEnv();
+    envSnapshot = snapshotEnv(ENV_KEYS);
+    clearEnvKeys(ENV_KEYS);
   });
 
   afterEach(() => {
-    clearEnv();
+    restoreEnv(envSnapshot);
   });
 
   it('should call the Gemini API with the correct prompt and parse the response', async () => {

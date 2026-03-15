@@ -1,26 +1,29 @@
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { getConfigStore, resetConfigStore } from '../src/configService.js';
 import type { Config } from '../src/configService.js';
+import { clearEnvKeys, restoreEnv, snapshotEnv } from './envTestUtils.js';
 
 describe('config store', () => {
-  const clearEnv = () => {
-    delete process.env['LOGCAT_AI_PROVIDER'];
-    delete process.env['LOGCAT_AI_MODEL'];
-    delete process.env['OPENAI_MODEL'];
-    delete process.env['GEMINI_MODEL'];
-    delete process.env['LOGCAT_AI_CONCURRENCY'];
-    delete process.env['LOGCAT_AI_RETRIES'];
-    delete process.env['OPENAI_TIMEOUT_MS'];
-    delete process.env['LOGCAT_SIGNATURE_MODE'];
-  };
+  const ENV_KEYS = [
+    'LOGCAT_AI_PROVIDER',
+    'LOGCAT_AI_MODEL',
+    'OPENAI_MODEL',
+    'GEMINI_MODEL',
+    'LOGCAT_AI_CONCURRENCY',
+    'LOGCAT_AI_RETRIES',
+    'OPENAI_TIMEOUT_MS',
+    'LOGCAT_SIGNATURE_MODE',
+  ] as const;
+  let envSnapshot: ReadonlyMap<string, string | undefined> = new Map();
 
   beforeEach(() => {
     resetConfigStore();
-    clearEnv();
+    envSnapshot = snapshotEnv(ENV_KEYS);
+    clearEnvKeys(ENV_KEYS);
   });
 
   afterEach(() => {
-    clearEnv();
+    restoreEnv(envSnapshot);
     resetConfigStore();
   });
 

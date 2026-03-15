@@ -76,7 +76,9 @@ const performRealtimeAction = async (opts: RealtimeOptions): Promise<void> => {
   });
 
   const buffers = parseBuffers(opts.buffers);
-  const resolvedProvider = resolveConfiguredProvider(opts.provider);
+  const resolvedProvider = resolveConfiguredProvider(opts.provider, {
+    rejectInvalidExplicit: true,
+  });
 
   const aiProvider = createAiProvider({
     provider: resolvedProvider,

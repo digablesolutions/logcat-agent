@@ -152,7 +152,9 @@ export interface AiProviderFactoryOptions {
 }
 
 export const createAiProvider = (options: AiProviderFactoryOptions): IAiProvider => {
-  const provider = resolveConfiguredProvider(options.provider);
+  const provider = resolveConfiguredProvider(options.provider, {
+    rejectInvalidExplicit: true,
+  });
 
   if (provider === 'openai') {
     if (!options.openaiApiKey && !options.openaiBaseUrl) {

@@ -10,7 +10,7 @@
 */
 
 import { parseArgs as nodeParseArgs } from 'node:util';
-import { resolveConfiguredModel } from '../src/ai/modelDefaults.js';
+import { resolveConfiguredModel, resolveConfiguredProvider } from '../src/ai/modelDefaults.js';
 import type { IAiProvider, AnalysisInput, AnalysisResult } from '../src/ai/provider.js';
 import { OpenAiProvider } from '../src/ai/openaiProvider.js';
 import { GeminiProvider } from '../src/ai/geminiProvider.js';
@@ -106,7 +106,13 @@ function createProvider(providerName: string, model: string, args: Record<string
 async function main() {
   const argv = process.argv.slice(2);
   const args = parseArgs(argv);
-  const providerName = String(args.provider || 'openai');
+  const rawProvider = typeof args.provider === 'string' ? args.provider.trim() : undefined;
+  const providerName =
+    rawProvider === 'noop' || rawProvider === 'none'
+      ? rawProvider
+      : resolveConfiguredProvider(rawProvider, {
+          rejectInvalidExplicit: true,
+        });
   const model =
     providerName === 'gemini'
       ? resolveConfiguredModel('gemini', {

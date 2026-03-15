@@ -2,6 +2,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { OpenAiProvider } from '../src/ai/openaiProvider.js';
 import type OpenAI from 'openai';
 import type { AnalysisInput } from '../src/ai/provider.js';
+import { clearEnvKeys, restoreEnv, snapshotEnv } from './envTestUtils.js';
 
 function makeInput(): AnalysisInput {
   return {
@@ -23,17 +24,16 @@ function makeInput(): AnalysisInput {
 }
 
 describe('OpenAiProvider (OpenAI-compatible base URL)', () => {
-  const clearEnv = () => {
-    delete process.env['OPENAI_MODEL'];
-    delete process.env['LOGCAT_AI_MODEL'];
-  };
+  const ENV_KEYS = ['OPENAI_MODEL', 'LOGCAT_AI_MODEL'] as const;
+  let envSnapshot: ReadonlyMap<string, string | undefined> = new Map();
 
   beforeEach(() => {
-    clearEnv();
+    envSnapshot = snapshotEnv(ENV_KEYS);
+    clearEnvKeys(ENV_KEYS);
   });
 
   afterEach(() => {
-    clearEnv();
+    restoreEnv(envSnapshot);
   });
 
   it('parses JSON result and propagates signature (with API key)', async () => {

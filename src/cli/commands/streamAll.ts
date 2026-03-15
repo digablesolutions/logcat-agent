@@ -173,7 +173,9 @@ const performStreamAllAction = async (
     minimum: 1,
   });
   const limiter = makeLimiter(1);
-  const resolvedProvider = resolveConfiguredProvider(opts.provider);
+  const resolvedProvider = resolveConfiguredProvider(opts.provider, {
+    rejectInvalidExplicit: true,
+  });
 
   const aiProvider = aiEnabled
     ? createAiProvider({

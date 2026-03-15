@@ -6,20 +6,19 @@ import {
   parseOptionalFloatFlagValue,
   parseOptionalIntegerFlagValue,
 } from '../src/cli/logCommandSupport.js';
+import { clearEnvKeys, restoreEnv, snapshotEnv } from './envTestUtils.js';
 
 describe('logCommandSupport numeric parsing', () => {
-  const clearEnv = () => {
-    delete process.env['LOGCAT_AI_PROVIDER'];
-    delete process.env['LOGCAT_AI_MODEL'];
-    delete process.env['OPENAI_MODEL'];
-  };
+  const ENV_KEYS = ['LOGCAT_AI_PROVIDER', 'LOGCAT_AI_MODEL', 'OPENAI_MODEL'] as const;
+  let envSnapshot: ReadonlyMap<string, string | undefined> = new Map();
 
   beforeEach(() => {
-    clearEnv();
+    envSnapshot = snapshotEnv(ENV_KEYS);
+    clearEnvKeys(ENV_KEYS);
   });
 
   afterEach(() => {
-    clearEnv();
+    restoreEnv(envSnapshot);
   });
 
   it('parses integers with bounds', () => {
@@ -58,5 +57,14 @@ describe('logCommandSupport numeric parsing', () => {
     });
 
     expect(provider.name()).toBe('gemini:gemini-2.5-flash');
+  });
+
+  it('rejects invalid explicit providers instead of silently falling back', () => {
+    expect(() =>
+      createAiProvider({
+        provider: 'typo' as 'openai' | 'gemini',
+        openaiBaseUrl: 'http://localhost:11434/v1',
+      })
+    ).toThrow('Invalid --provider value: typo. Expected one of openai,gemini.');
   });
 });
