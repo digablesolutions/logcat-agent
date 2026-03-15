@@ -1,4 +1,4 @@
-import { describe, it, expect, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { OpenAiProvider } from '../src/ai/openaiProvider.js';
 import type OpenAI from 'openai';
 import type { AnalysisInput } from '../src/ai/provider.js';
@@ -23,6 +23,16 @@ function makeInput(): AnalysisInput {
 }
 
 describe('OpenAiProvider (OpenAI-compatible base URL)', () => {
+  const originalEnv = process.env;
+
+  beforeEach(() => {
+    process.env = {};
+  });
+
+  afterEach(() => {
+    process.env = originalEnv;
+  });
+
   it('parses JSON result and propagates signature (with API key)', async () => {
     const mockCreate = vi.fn().mockResolvedValue({
       choices: [
@@ -42,7 +52,7 @@ describe('OpenAiProvider (OpenAI-compatible base URL)', () => {
       chat: { completions: { create: mockCreate } },
     } as unknown as OpenAI;
 
-    const provider = new OpenAiProvider('sk-test', { model: 'gpt-4o-mini' }, injected);
+    const provider = new OpenAiProvider('sk-test', { model: 'gpt-5-mini' }, injected);
     const res = await provider.analyze(makeInput());
     expect(res.summary).toBe('Ok');
     expect(res.likelyCauses).toEqual(['A']);
@@ -51,6 +61,15 @@ describe('OpenAiProvider (OpenAI-compatible base URL)', () => {
     expect(res.signature).toBe('sig-123');
     expect(provider.name()).toContain('openai:');
     expect(mockCreate).toHaveBeenCalledOnce();
+  });
+
+  it('uses the refreshed default model when none is supplied', () => {
+    const injected = {
+      chat: { completions: { create: vi.fn() } },
+    } as unknown as OpenAI;
+
+    const provider = new OpenAiProvider('sk-test', {}, injected);
+    expect(provider.name()).toBe('openai:gpt-5-mini');
   });
 
   it('works without OPENAI_API_KEY when baseURL is provided (local server)', async () => {

@@ -23,14 +23,14 @@ Use this guide when running the agent against a real Android device or emulator.
 
 macOS/Linux:
 
-- `OPENAI_API_KEY=sk-... npx tsx src/cli/main.ts stream --model gpt-4o-mini --provider openai`
-- `GEMINI_API_KEY=... npx tsx src/cli/main.ts stream --model gemini-1.5-flash-latest --provider gemini`
+- `OPENAI_API_KEY=sk-... npx tsx src/cli/main.ts stream --model gpt-5-mini --provider openai`
+- `GEMINI_API_KEY=... npx tsx src/cli/main.ts stream --model gemini-2.5-flash --provider gemini`
 - `OPENAI_BASE_URL=http://localhost:11434/v1 npx tsx src/cli/main.ts stream --model llama3.1:8b-instruct --provider openai`
 
 Windows PowerShell:
 
-- `$env:OPENAI_API_KEY="sk-..."; npx tsx src/cli/main.ts stream --model gpt-4o-mini --provider openai`
-- `$env:GEMINI_API_KEY="..."; npx tsx src/cli/main.ts stream --model gemini-1.5-flash-latest --provider gemini`
+- `$env:OPENAI_API_KEY="sk-..."; npx tsx src/cli/main.ts stream --model gpt-5-mini --provider openai`
+- `$env:GEMINI_API_KEY="..."; npx tsx src/cli/main.ts stream --model gemini-2.5-flash --provider gemini`
 - `$env:OPENAI_BASE_URL="http://localhost:11434/v1"; npx tsx src/cli/main.ts stream --model llama3.1:8b-instruct --provider openai`
 
 ## Realtime AI analysis

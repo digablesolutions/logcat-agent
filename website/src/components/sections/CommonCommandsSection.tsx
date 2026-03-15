@@ -27,12 +27,12 @@ export function CommonCommandsSection() {
               d: 'Filter by app tag without AI analysis',
             },
             {
-              c: `${cli} stream --model gpt-4o --provider openai`,
-              d: 'Use OpenAI GPT-4o for enhanced analysis',
+              c: `${cli} stream --model gpt-5-mini --provider openai`,
+              d: 'Use OpenAI GPT-5 mini for fast, low-latency analysis',
             },
             {
-              c: `${cli} stream --model gemini-1.5-flash-latest --provider gemini`,
-              d: 'Use Google Gemini 1.5 Flash for fast analysis',
+              c: `${cli} stream --model gemini-2.5-flash --provider gemini`,
+              d: 'Use Google Gemini 2.5 Flash for fast analysis',
             },
             {
               c: `${cli} stream --wifi --wifi-qr --wifi-timeout 90000`,

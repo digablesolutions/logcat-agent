@@ -97,11 +97,11 @@ export function FeaturesSection() {
                 note="OpenAI • Windows PowerShell"
               />
               <CodeWithCopy
-                cmd={`GEMINI_API_KEY=... ${cli} stream --provider gemini --model gemini-1.5-flash-latest`}
+                cmd={`GEMINI_API_KEY=... ${cli} stream --provider gemini --model gemini-2.5-flash`}
                 note="Gemini • macOS/Linux"
               />
               <CodeWithCopy
-                cmd={`$env:GEMINI_API_KEY="..."; ${cli} stream --provider gemini --model gemini-1.5-flash-latest`}
+                cmd={`$env:GEMINI_API_KEY="..."; ${cli} stream --provider gemini --model gemini-2.5-flash`}
                 note="Gemini • Windows PowerShell"
               />
               <CodeWithCopy

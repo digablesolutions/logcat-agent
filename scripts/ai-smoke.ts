@@ -3,12 +3,14 @@
   Usage examples:
     npm run ai:smoke -- --provider openai --model llama3.1:8b --openai-base-url http://localhost:11434/v1
     npm run ai:smoke -- --provider openai --model phi3:mini --openai-base-url http://localhost:11434/v1
-    OPENAI_API_KEY=sk-... npm run ai:smoke -- --provider openai --model gpt-4o-mini
+    OPENAI_API_KEY=sk-... npm run ai:smoke -- --provider openai --model gpt-5-mini
+    GEMINI_API_KEY=... npm run ai:smoke -- --provider gemini --model gemini-2.5-flash
     # No AI calls (noop):
     npm run ai:smoke -- --provider noop
 */
 
 import { parseArgs as nodeParseArgs } from 'node:util';
+import { resolveConfiguredModel } from '../src/ai/modelDefaults.js';
 import type { IAiProvider, AnalysisInput, AnalysisResult } from '../src/ai/provider.js';
 import { OpenAiProvider } from '../src/ai/openaiProvider.js';
 import { GeminiProvider } from '../src/ai/geminiProvider.js';
@@ -105,7 +107,14 @@ async function main() {
   const argv = process.argv.slice(2);
   const args = parseArgs(argv);
   const providerName = String(args.provider || 'openai');
-  const model = String(args.model || 'gpt-4o-mini');
+  const model =
+    providerName === 'gemini'
+      ? resolveConfiguredModel('gemini', {
+          explicitModel: typeof args.model === 'string' ? args.model : undefined,
+        })
+      : resolveConfiguredModel('openai', {
+          explicitModel: typeof args.model === 'string' ? args.model : undefined,
+        });
 
   let provider: IAiProvider;
   try {

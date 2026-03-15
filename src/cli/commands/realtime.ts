@@ -2,6 +2,7 @@ import { Command } from 'commander';
 import chalk from 'chalk';
 import { listDevices, spawnLogcatBinary, type Device } from '../../adb/adbClient.js';
 import { attachLogcatParser } from '../../adb/logcatStream.js';
+import { resolveConfiguredModel } from '../../ai/modelDefaults.js';
 import { makeFilter } from '../../pipeline/filters.js';
 import { RealtimeAnalysisEngine } from '../../ai/realtime/index.js';
 import type {
@@ -84,6 +85,9 @@ const performRealtimeAction = async (opts: RealtimeOptions): Promise<void> => {
       opts.openaiBaseUrl || process.env['LOGCAT_OPENAI_BASE_URL'] || process.env['OPENAI_BASE_URL'],
     geminiApiKey: process.env['GEMINI_API_KEY'],
   });
+  const resolvedAiModel = resolveConfiguredModel(opts.provider ?? 'openai', {
+    explicitModel: opts.model,
+  });
   const profileConfig = getAnalysisProfile(opts.profile);
   const renderer = createConsoleLogRenderer();
   const normalizedWindowSize = parseOptionalIntegerFlagValue(opts.windowSize, '--window-size', {
@@ -141,7 +145,7 @@ const performRealtimeAction = async (opts: RealtimeOptions): Promise<void> => {
     model: selectedDevice.model,
     buffers,
     minPriority: minPriority || 'I',
-    aiModel: opts.model || 'default',
+    aiModel: resolvedAiModel,
     profileName: opts.profile,
     profileDescription: getProfileDescription(opts.profile),
     windowSize: realtimeConfig.windowSize,

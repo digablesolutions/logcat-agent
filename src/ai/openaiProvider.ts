@@ -1,5 +1,9 @@
 import OpenAI from 'openai';
 import { AiProviderError, getErrorCode, getErrorMessage, getErrorStatus } from '../errors.js';
+import {
+  DEFAULT_OPENAI_MODEL_FALLBACKS,
+  resolveConfiguredModel,
+} from './modelDefaults.js';
 import type { IAiProvider, AnalysisInput, AnalysisResult } from './provider.js';
 import { redactMessage } from './masking.js';
 import { makeLimiter as defaultMakeLimiter } from './rateLimiter.js';
@@ -63,11 +67,14 @@ export class OpenAiProvider implements IAiProvider {
 
   constructor(
     apiKey: string | undefined,
-    modelOrOptions: string | OpenAiProviderOptions = 'gpt-4o-mini',
+    modelOrOptions: string | OpenAiProviderOptions = {},
     injectedClient?: OpenAI
   ) {
     const baseOptions: OpenAiProviderOptions =
       typeof modelOrOptions === 'string' ? { model: modelOrOptions } : modelOrOptions;
+    const resolvedModel = resolveConfiguredModel('openai', {
+      explicitModel: baseOptions.model,
+    });
 
     const resolvedBaseURL =
       (typeof baseOptions.baseURL === 'string' && baseOptions.baseURL) ||
@@ -92,12 +99,12 @@ export class OpenAiProvider implements IAiProvider {
         defaultMakeLimiter(
           baseOptions.concurrency || 1
         ),
-      modelFallbacks: baseOptions.modelFallbacks || ['gpt-4o-mini', 'gpt-4o'],
+      modelFallbacks: baseOptions.modelFallbacks || [...DEFAULT_OPENAI_MODEL_FALLBACKS],
       redact: baseOptions.redact || ((s: string) => redactMessage(s)),
       baseURL: resolvedBaseURL,
     };
 
-    this.model = baseOptions.model || 'gpt-4o-mini';
+    this.model = resolvedModel;
     this.options = resolved;
 
     // If pointing to a local OpenAI-compatible server, allow missing API key by using a placeholder

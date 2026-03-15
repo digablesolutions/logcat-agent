@@ -19,18 +19,40 @@ describe('config store', () => {
     const config = getConfigStore();
     expect(config.get('aiEnabled')).toBe(true);
     expect(config.get('aiProvider')).toBe('openai');
+    expect(config.get('aiModel')).toBe('gpt-5-mini');
     expect(config.get('logcatBuffers')).toEqual(['main', 'crash']);
   });
 
   it('should load from env', () => {
     process.env['LOGCAT_AI_PROVIDER'] = 'gemini';
-    process.env['LOGCAT_AI_MODEL'] = 'gemini-pro';
+    process.env['LOGCAT_AI_MODEL'] = 'gemini-2.5-flash-lite';
 
     resetConfigStore();
     const config = getConfigStore();
 
     expect(config.get('aiProvider')).toBe('gemini');
-    expect(config.get('aiModel')).toBe('gemini-pro');
+    expect(config.get('aiModel')).toBe('gemini-2.5-flash-lite');
+  });
+
+  it('should use the provider default when no model override is set', () => {
+    process.env['LOGCAT_AI_PROVIDER'] = 'gemini';
+
+    resetConfigStore();
+    const config = getConfigStore();
+
+    expect(config.get('aiProvider')).toBe('gemini');
+    expect(config.get('aiModel')).toBe('gemini-2.5-flash');
+  });
+
+  it('should prefer provider-specific model env vars over the shared model override', () => {
+    process.env['LOGCAT_AI_PROVIDER'] = 'openai';
+    process.env['LOGCAT_AI_MODEL'] = 'gpt-5.4';
+    process.env['OPENAI_MODEL'] = 'gpt-5-mini';
+
+    resetConfigStore();
+    const config = getConfigStore();
+
+    expect(config.get('aiModel')).toBe('gpt-5-mini');
   });
 
   it('should clamp invalid numeric env values to safe ranges', () => {

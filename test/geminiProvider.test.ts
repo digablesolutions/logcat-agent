@@ -1,9 +1,19 @@
-import { describe, it, expect, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { GeminiProvider } from '../src/ai/geminiProvider.js';
 import type { GoogleGenerativeAI } from '@google/generative-ai';
 import type { AnalysisInput } from '../src/ai/provider.js';
 
 describe('GeminiProvider', () => {
+  const originalEnv = process.env;
+
+  beforeEach(() => {
+    process.env = {};
+  });
+
+  afterEach(() => {
+    process.env = originalEnv;
+  });
+
   it('should call the Gemini API with the correct prompt and parse the response', async () => {
     const mockGenerateContent = vi.fn().mockResolvedValue({
       response: {
@@ -23,7 +33,7 @@ describe('GeminiProvider', () => {
       })),
     } as unknown as GoogleGenerativeAI;
 
-    const provider = new GeminiProvider('test-api-key', 'gemini-1.5-flash-latest', mockClient);
+    const provider = new GeminiProvider('test-api-key', 'gemini-2.5-flash', mockClient);
     const input: AnalysisInput = {
       match: {
         pattern: { name: 'Test Pattern', regex: /Test Pattern/, severity: 'error' },
@@ -49,5 +59,14 @@ describe('GeminiProvider', () => {
     expect(result.severity).toBe('high');
     expect(result.signature).toBe('test-signature');
     expect(mockGenerateContent).toHaveBeenCalledOnce();
+  });
+
+  it('uses the refreshed default model when none is supplied', () => {
+    const mockClient = {
+      getGenerativeModel: vi.fn(),
+    } as unknown as GoogleGenerativeAI;
+
+    const provider = new GeminiProvider('test-api-key', {}, mockClient);
+    expect(provider.name()).toBe('gemini:gemini-2.5-flash');
   });
 });
