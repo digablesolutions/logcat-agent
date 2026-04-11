@@ -42,7 +42,7 @@
     "eventemitter3": "^5.0.4",
     "fast-redact": "^3.5.0",
     "multicast-dns": "^7.2.5",
-    "openai": "^6.29.0",
+    "openai": "^6.34.0",
     "p-limit": "^7.3.0",
     "qrcode-terminal": "^0.12.0",
     "string-hash": "^1.1.3"
