@@ -33,14 +33,14 @@ jobs:
             website/package-lock.json
 
       - name: Cache TypeScript build info
-        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
+        uses: actions/cache@668228422ae6a00e4ad889ee87cd7109ec5666a7 # v5.0.4
         with:
           path: |
             node_modules/.cache/tsbuildinfo
           key: ${{ runner.os }}-tsbuildinfo-${{ hashFiles('tsconfig.json', 'tsconfig.test.json', 'package-lock.json') }}
 
       - name: Cache Vitest cache
-        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
+        uses: actions/cache@668228422ae6a00e4ad889ee87cd7109ec5666a7 # v5.0.4
         with:
           path: |
             node_modules/.vitest
